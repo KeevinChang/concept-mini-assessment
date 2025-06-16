@@ -8,6 +8,7 @@ from .models import Profile, CreativeField, PortfolioLink
 
 class ProfileListView(ListView):
     model = Profile
+    template_name = 'profiles/profile_list.html'
 
 
 class ProfileDetailView(DetailView):
