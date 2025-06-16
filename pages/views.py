@@ -1,8 +1,15 @@
-from django.shortcuts import render
-# Create your views here.
+from django.shortcuts import render, redirect
+
+
+def set_role(request, role):
+    if role in ['Viewer', 'Creator']:
+        request.session['role'] = role
+    return redirect('homepage')
+
 
 def homepage(request):
-    return render(request, 'pages/homepage.html')
+    role = request.session.get('role', 'Viewer')
+    return render(request, 'pages/homepage.html', {'role': role})
 
 
 def about(request):

@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>This is the home page</h1>
+<div class="container d-flex flex-column justify-content-center align-items-center" style="height:50vh;">
+    <h2>You are viewing my submission for the Concept Summer Intern Take Home Assessment</h2>
+    <p>You are currently viewing the page as a <strong>{{ role }}</strong></p>
+</div>
+
+<div class="d-flex justify-content-center gap-5 mt-4">
+    <a href="{% url 'set_role' 'Viewer' %}" class="btn btn-outline-secondary">Switch to Viewer</a>
+    <a href="{% url 'set_role' 'Creator' %}" class="btn btn-outline-secondary">Switch to Creator</a>
+</div>
+
 {% endblock %}
