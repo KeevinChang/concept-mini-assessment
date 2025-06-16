@@ -24,8 +24,19 @@
     </nav>
 
     <main>
-        {% block content %}
-        {% endblock %}
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
     </main>
+
+    <footer class="bg-dark text-light text-center py-3 mt-5 fixed-bottom">
+        <div class="container text-center">
+            <span>
+                This is a demo. Do not submit private/sensitive information.
+            </span>
+        </div>
+    </footer>
+
 </body>
 </html>
