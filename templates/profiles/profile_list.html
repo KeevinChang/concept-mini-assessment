@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 
 {% block navbar_links %}
-
+{% if role == 'Creator' %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'profiles:create-profile' %}">Create New Profile</a>
+</li>
+{% endif %}
 {% endblock %}
 
 {% block navbar_search %}
-<form class="d-flex me-5" role="search" method="get" action="">
-    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="query">
-    <button class="btn btn-success" type="submit">Search</button>
+<form class="d-flex position-absolute start-50 translate-middle-x" role="search" method="get" action="">
+    <input class="form-control me-2" type="search" placeholder="Search by name" aria-label="Search" name="query">
 </form>
 {% endblock %}
