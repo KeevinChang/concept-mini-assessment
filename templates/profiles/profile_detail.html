@@ -1,1 +1,35 @@
 {% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="{{ profile.profile_picture.url }}" class="img-fluid rounded-start" alt="{{ profile.name }}">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h2 class="card-title">{{ profile.name }}</h2>
+                    <p class="card-text">{{ profile.bio }}</p>
+                    <p>
+                        {% for field in profile.creative_fields.all %}
+                            <span class="badge bg-primary">{{ field.name }}</span>
+                        {% endfor %}
+                    </p>
+                    <div>
+                        {% if profile.portfolio_link1 %}
+                            <a href="{{ profile.portfolio_link1 }}" target="_blank" class="btn btn-outline-dark btn-sm">Link 1</a>
+                        {% endif %}
+                        {% if profile.portfolio_link2 %}
+                            <a href="{{ profile.portfolio_link2 }}" target="_blank" class="btn btn-outline-dark btn-sm">Link 2</a>
+                        {% endif %}
+                        {% if profile.portfolio_link3 %}
+                            <a href="{{ profile.portfolio_link3 }}" target="_blank" class="btn btn-outline-dark btn-sm">Link 3</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -20,6 +20,14 @@ class ProfileListView(ListView):
 
 class ProfileDetailView(DetailView):
     model = Profile
+    template_name = 'profiles/profile_detail.html'
+    slug_field = 'name'
+    slug_url_kwarg = 'name'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['role'] = self.request.session['role']
+        return context
 
 
 class ProfileCreateView(CreateView):
