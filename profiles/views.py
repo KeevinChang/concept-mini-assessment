@@ -1,7 +1,7 @@
-from django.http import HttpResponse
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView
 
 from .models import Profile, CreativeField, PortfolioLink
 from .forms import ProfileForm, PortfolioLinkFormSet
@@ -54,3 +54,14 @@ class ProfileCreateView(CreateView):
             return redirect(self.success_url)
         else:
             return self.form_invalid(form)
+
+
+class ProfileDeleteView(DeleteView):
+    model = Profile
+    slug_field = 'name'
+    slug_url_kwarg = 'name'
+    success_url = reverse_lazy('profiles:profile-list')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Profile deleted successfully.")
+        return super().delete(request, *args, **kwargs)
