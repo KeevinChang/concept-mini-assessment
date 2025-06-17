@@ -4,17 +4,22 @@
 
 {% block content %}
 <div class="container py-3 mb-5">
-  <h2>Create Profile</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <h5>Portfolio Links (up to 3):</h5>
-    {{ formset.management_form }}
-    {% for form in formset %}
-      {{ form.as_p }}
-    {% endfor %}
-    <button type="submit" class="btn btn-primary">Create</button>
-    <a href="{% url 'profiles:profile-list' %}" class="btn btn-link">Cancel</a>
-  </form>
+    <h2>Create Profile</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <h5>Portfolio Links (up to 3):</h5>
+        {{ formset.management_form }}
+        {% for form in formset %}
+            {{ form.as_p }}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="{% url 'profiles:profile-list' %}" class="btn btn-link">Cancel</a>
+        {% if form.errors %}
+            <div class="alert alert-danger mt-3">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+    </form>
 </div>
 {% endblock %}

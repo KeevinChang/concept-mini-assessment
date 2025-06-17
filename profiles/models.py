@@ -10,7 +10,7 @@ class CreativeField(models.Model):
 
 
 class Profile(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     profile_picture = models.ImageField(upload_to='profiles/', default='profiles/default.jpg', blank=True)
     bio = models.TextField()
     creative_fields = models.ManyToManyField(CreativeField)
