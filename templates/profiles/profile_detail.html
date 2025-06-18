@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
     <div class="card mb-3">
         <div class="row g-0">
             <div class="col-md-4">
@@ -26,23 +26,20 @@
                             <span class="badge bg-primary">{{ field.name }}</span>
                         {% endfor %}
                     </p>
-                    <div>
-                        {% if profile.portfolio_link1 %}
-                            <a href="{{ profile.portfolio_link1 }}" target="_blank" class="btn btn-outline-dark btn-sm">Link 1</a>
-                        {% endif %}
-                        {% if profile.portfolio_link2 %}
-                            <a href="{{ profile.portfolio_link2 }}" target="_blank" class="btn btn-outline-dark btn-sm">Link 2</a>
-                        {% endif %}
-                        {% if profile.portfolio_link3 %}
-                            <a href="{{ profile.portfolio_link3 }}" target="_blank" class="btn btn-outline-dark btn-sm">Link 3</a>
-                        {% endif %}
-                    </div>
-
+                    <h5>Portfolio Links</h5>
+                    <ul>
+                        {% for link in portfolio_links %}
+                            <li><a href="{{ link.link }}" target="_blank">{{ link.link }}</a></li>
+                        {% empty %}
+                            <li>No links provided.</li>
+                        {% endfor %}
+                    </ul>
                     {% if role == 'Creator' %}
                     <button type="button" class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
                         Delete Profile
                     </button>
                     {% endif %}
+                    <a href="{% url 'profiles:profile-list' %}" class="btn btn-secondary">Back</a>
                 </div>
             </div>
         </div>
