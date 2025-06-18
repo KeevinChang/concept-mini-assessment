@@ -1,12 +1,23 @@
 from django.contrib import messages
+from django.forms import modelformset_factory, BaseModelFormSet
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 
 from .models import Profile, CreativeField, PortfolioLink
 from .forms import ProfileForm, PortfolioLinkFormSet
 
 # Create your views here.
+class SkippingBaseFormSet(BaseModelFormSet):
+    def clean(self):
+        super().clean()
+        for form in self.forms:
+            if self.can_delete:
+                delete = form.cleaned_data.get('DELETE', False)
+                obj_id = form.cleaned_data.get('id')
+                if delete and not obj_id:
+                    form._errors = {}
+
 
 class ProfileListView(ListView):
     model = Profile
@@ -72,8 +83,36 @@ class ProfileUpdateView(UpdateView):
     model = Profile
     form_class = ProfileForm
     template_name = 'profiles/profile_edit.html'
+    context_object_name = 'profile'
     slug_field = 'name'
     slug_url_kwarg = 'name'
 
     def get_success_url(self):
         return reverse_lazy('profiles:profile-detail', kwargs={'name': self.object.name})
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            # Use the already defined PortfolioLinkFormSet
+            data['formset'] = PortfolioLinkFormSet(self.request.POST, self.request.FILES, instance=self.object)
+        else:
+            # Use the already defined PortfolioLinkFormSet
+            data['formset'] = PortfolioLinkFormSet(instance=self.object)
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context['formset']
+
+        if formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+            return super().form_valid(form)
+        else:
+            # If formset is invalid, re-render the form with errors
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        context = self.get_context_data() # Re-get context to include formset errors
+        return self.render_to_response(self.get_context_data(form=form, formset=context['formset']))

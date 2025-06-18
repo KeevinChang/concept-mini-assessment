@@ -1,24 +1,26 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit {{ profile.name }}{% endblock %}
+{% block title %}Update Profile{% endblock %}
 
 {% block content %}
 <div class="container py-3 mb-5">
-    <h2>Edit Profile</h2>
+    <h2>Update Profile</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <h5>Portfolio Links (up to 3):</h5>
-        {{ formset.management_form }}
+        {{ formset.management_form }} {# This includes TOTAL_FORMS, INITIAL_FORMS etc. #}
         <div id="link-formset" class="d-flex flex-column gap-2">
             {% for form in formset %}
-                <div class="link-form position-relative">
+                <div class="link-form position-relative"{% if forloop.last and form.instance.pk is None %} data-empty-form{% endif %}>
+                    {# Include the hidden DELETE field and the ID field for existing forms #}
                     {% for field in form.visible_fields %}
-                        {% if field.name != 'DELETE' %}
-                            {{ field.label_tag }} {{ field }}
-                        {% endif %}
+                        {{ field.label_tag }} {{ field }}
                     {% endfor %}
-                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 remove-link">Remove</button>
+                    {# The ID field and DELETE checkbox are crucial hidden fields for formsets #}
+                    {{ form.id }}
+                    {{ form.DELETE }}
+                    <button type="button" class="btn btn-danger btn-sm remove-link">Remove</button>
                 </div>
             {% endfor %}
         </div>
@@ -27,13 +29,27 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2">
-            <button type="submit" class="btn btn-primary">Confirm</button>
-            <a href="{% url 'profiles:profile-list' %}" class="btn btn-link">Cancel</a>
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a href="{% url 'profiles:profile-detail' name=profile.name %}" class="btn btn-link">Cancel</a>
         </div>
 
         {% if form.errors %}
             <div class="alert alert-danger mt-3">
                 {{ form.errors }}
+            </div>
+        {% endif %}
+        {# Display formset errors if any #}
+        {% if formset.errors %}
+            <div class="alert alert-danger mt-3">
+                {% for field_errors in formset.errors %}
+                    {% if field_errors %}
+                        <ul>
+                            {% for error in field_errors.values %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
             </div>
         {% endif %}
     </form>
@@ -42,13 +58,39 @@
 document.addEventListener('DOMContentLoaded', function () {
     const linkFormset = document.getElementById('link-formset');
     const addLinkBtn = document.getElementById('add-link');
-    const totalForms = document.getElementById('id_portfolio_links-TOTAL_FORMS');
+    const totalFormsInput = document.getElementById('id_portfolio_links-TOTAL_FORMS');
+    const initialFormsInput = document.getElementById('id_portfolio_links-INITIAL_FORMS');
+
+    const emptyFormTemplate = document.querySelector('.link-form').cloneNode(true);
+    emptyFormTemplate.style.display = '';
+    emptyFormTemplate.removeAttribute('data-empty-form');
+
+    emptyFormTemplate.querySelectorAll('input, select, textarea').forEach(input => {
+        if (input.type !== 'hidden') {
+            input.value = '';
+        }
+        if (input.name && input.name.endsWith('-id')) {
+            input.value = '';
+        }
+        if (input.name && input.name.endsWith('-DELETE')) {
+            input.checked = false;
+        }
+    });
+    const templateRemoveBtn = emptyFormTemplate.querySelector('.remove-link');
+    if (templateRemoveBtn) {
+        templateRemoveBtn.onclick = null;
+    }
 
     function toggleRemoveButtons() {
         const forms = document.querySelectorAll('.link-form');
+        const visibleForms = Array.from(forms).filter(form => {
+            const deleteInput = form.querySelector('input[name$="-DELETE"]');
+            return form.style.display !== 'none' && (!deleteInput || !deleteInput.checked);
+        });
+
         const removeButtons = document.querySelectorAll('.remove-link');
 
-        if (forms.length <= 1) {
+        if (visibleForms.length <= 1) {
             removeButtons.forEach(btn => btn.style.display = 'none');
         } else {
             removeButtons.forEach(btn => btn.style.display = '');
@@ -56,30 +98,51 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     addLinkBtn.addEventListener('click', function () {
-        let formCount = parseInt(totalForms.value);
-        if (formCount >= 3) return;
+        let formCount = parseInt(totalFormsInput.value);
+        if (formCount >= 3) {
+            alert('You can only add up to 3 portfolio links (including existing and hidden-for-deletion ones).');
+            return;
+        }
 
-        const newForm = document.querySelectorAll('.link-form')[0].cloneNode(true);
-        newForm.querySelectorAll('input').forEach(input => {
-            input.name = input.name.replace(/-\d+-/, `-${formCount}-`);
-            input.id = input.id.replace(/-\d+-/, `-${formCount}-`);
-            input.value = '';
+        const newForm = emptyFormTemplate.cloneNode(true);
+
+        newForm.querySelectorAll('input, select, textarea').forEach(input => {
+            if (input.name) {
+                input.name = input.name.replace(/-\d+-/, `-${formCount}-`);
+            }
+            if (input.id) {
+                input.id = input.id.replace(/-\d+-/, `-${formCount}-`);
+            }
         });
 
-        newForm.querySelector('.remove-link').addEventListener('click', function () {
-            newForm.remove();
-            updateFormIndices();
-            toggleRemoveButtons();
-        });
+        const removeButton = newForm.querySelector('.remove-link');
+        if (removeButton) {
+            removeButton.addEventListener('click', function () {
+                const formToHide = this.closest('.link-form');
+                const deleteInput = formToHide.querySelector('input[name$="-DELETE"]');
+                if (deleteInput) {
+                    deleteInput.checked = true;
+                }
+                formToHide.style.display = 'none';
+                updateFormIndices();
+                toggleRemoveButtons();
+            });
+        }
 
         linkFormset.appendChild(newForm);
-        totalForms.value = formCount + 1;
+        totalFormsInput.value = formCount + 1;
+        updateFormIndices();
         toggleRemoveButtons();
     });
 
     document.querySelectorAll('.remove-link').forEach(btn => {
         btn.addEventListener('click', function () {
-            btn.closest('.link-form').remove();
+            const formToHide = this.closest('.link-form');
+            const deleteInput = formToHide.querySelector('input[name$="-DELETE"]');
+            if (deleteInput) {
+                deleteInput.checked = true;
+            }
+            formToHide.style.display = 'none';
             updateFormIndices();
             toggleRemoveButtons();
         });
@@ -87,16 +150,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateFormIndices() {
         const forms = document.querySelectorAll('.link-form');
-        forms.forEach((form, index) => {
-            form.querySelectorAll('input').forEach(input => {
-                input.name = input.name.replace(/-\d+-/, `-${index}-`);
-                input.id = input.id.replace(/-\d+-/, `-${index}-`);
+        let currentFormIndex = 0;
+
+        forms.forEach(form => {
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.name) {
+                    input.name = input.name.replace(/-\d+-/, `-${currentFormIndex}-`);
+                }
+                if (input.id) {
+                    input.id = input.id.replace(/-\d+-/, `-${currentFormIndex}-`);
+                }
             });
+            currentFormIndex++;
         });
-        totalForms.value = forms.length;
+        totalFormsInput.value = forms.length;
     }
 
-    // Initial call on page load
+    updateFormIndices();
     toggleRemoveButtons();
 });
 </script>

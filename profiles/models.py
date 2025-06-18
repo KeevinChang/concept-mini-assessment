@@ -21,7 +21,7 @@ class Profile(models.Model):
 
 class PortfolioLink(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='portfolio_links')
-    link = models.URLField()
+    link = models.URLField(max_length=200, blank=True)
 
     def __str__(self):
         return self.link
