@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 
 from .models import Profile, CreativeField, PortfolioLink
 from .forms import ProfileForm, PortfolioLinkFormSet
@@ -26,6 +26,7 @@ class ProfileDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['portfolio_links'] = self.object.portfolio_links.all()
         context['role'] = self.request.session['role']
         return context
 
@@ -65,3 +66,14 @@ class ProfileDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, "Profile deleted successfully.")
         return super().delete(request, *args, **kwargs)
+
+
+class ProfileUpdateView(UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    template_name = 'profiles/profile_edit.html'
+    slug_field = 'name'
+    slug_url_kwarg = 'name'
+
+    def get_success_url(self):
+        return reverse_lazy('profiles:profile-detail', kwargs={'name': self.object.name})

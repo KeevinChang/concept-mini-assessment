@@ -33,6 +33,10 @@
                             {% endfor %}
                         </p>
                         <a href="{% url 'profiles:profile-detail' profile.name %}" class="btn btn-outline-dark btn-sm">View Profile</a>
+
+                        {% if role == 'Creator' %}
+                            <a href="{% url 'profiles:profile-edit' profile.name %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

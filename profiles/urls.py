@@ -8,5 +8,6 @@ urlpatterns = [
     path('', views.ProfileListView.as_view(), name='profile-list'),
     path('create/', views.ProfileCreateView.as_view(), name='create-profile'),
     path('<str:name>/', views.ProfileDetailView.as_view(), name='profile-detail'),
+    path('<str:name>/edit/', views.ProfileUpdateView.as_view(), name='profile-edit'),
     path('<str:name>/delete/', views.ProfileDeleteView.as_view(), name='profile-delete'),
 ]
