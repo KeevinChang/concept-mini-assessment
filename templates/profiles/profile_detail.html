@@ -2,6 +2,14 @@
 
 {% block title %}{{ profile.name }}{% endblock %}
 
+{% block navbar_links %}
+{% if role == 'Creator' %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'profiles:create-profile' %}">Create New Profile</a>
+</li>
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="card mb-3">
