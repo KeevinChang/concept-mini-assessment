@@ -23,9 +23,17 @@ class ProfileListView(ListView):
     model = Profile
     template_name = 'profiles/profile_list.html'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(name__icontains=query)
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super(ProfileListView, self).get_context_data(**kwargs)
         context['role'] = self.request.session['role']
+        context['search_query'] = self.request.GET.get('q', '')
         return context
 
 
