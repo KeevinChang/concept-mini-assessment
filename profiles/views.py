@@ -93,10 +93,8 @@ class ProfileUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
-            # Use the already defined PortfolioLinkFormSet
             data['formset'] = PortfolioLinkFormSet(self.request.POST, self.request.FILES, instance=self.object)
         else:
-            # Use the already defined PortfolioLinkFormSet
             data['formset'] = PortfolioLinkFormSet(instance=self.object)
         return data
 
@@ -110,9 +108,8 @@ class ProfileUpdateView(UpdateView):
             formset.save()
             return super().form_valid(form)
         else:
-            # If formset is invalid, re-render the form with errors
             return self.form_invalid(form)
 
     def form_invalid(self, form):
-        context = self.get_context_data() # Re-get context to include formset errors
+        context = self.get_context_data()
         return self.render_to_response(self.get_context_data(form=form, formset=context['formset']))

@@ -81,16 +81,34 @@ document.addEventListener('DOMContentLoaded', function () {
         templateRemoveBtn.onclick = null;
     }
 
-    function toggleRemoveButtons() {
+    function getActiveLinkCount() {
         const forms = document.querySelectorAll('.link-form');
-        const visibleForms = Array.from(forms).filter(form => {
+        let activeCount = 0;
+        forms.forEach(form => {
             const deleteInput = form.querySelector('input[name$="-DELETE"]');
-            return form.style.display !== 'none' && (!deleteInput || !deleteInput.checked);
+            if (form.style.display !== 'none' && (!deleteInput || !deleteInput.checked)) {
+                activeCount++;
+            }
         });
+        return activeCount;
+    }
 
+    function updateAddButtonState() {
+        const activeCount = getActiveLinkCount();
+        if (activeCount >= 3) {
+            addLinkBtn.disabled = true;
+            addLinkBtn.textContent = 'Maximum 3 Links Added';
+        } else {
+            addLinkBtn.disabled = false;
+            addLinkBtn.textContent = 'Add Link';
+        }
+    }
+
+    function toggleRemoveButtons() {
+        const activeCount = getActiveLinkCount();
         const removeButtons = document.querySelectorAll('.remove-link');
 
-        if (visibleForms.length <= 1) {
+        if (activeCount <= 1) {
             removeButtons.forEach(btn => btn.style.display = 'none');
         } else {
             removeButtons.forEach(btn => btn.style.display = '');
@@ -98,11 +116,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     addLinkBtn.addEventListener('click', function () {
-        let formCount = parseInt(totalFormsInput.value);
-        if (formCount >= 3) {
-            alert('You can only add up to 3 portfolio links (including existing and hidden-for-deletion ones).');
+        if (getActiveLinkCount() >= 3) {
+            alert('You can only have up to 3 active portfolio links at a time.');
             return;
         }
+
+        let formCount = parseInt(totalFormsInput.value);
 
         const newForm = emptyFormTemplate.cloneNode(true);
 
@@ -126,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 formToHide.style.display = 'none';
                 updateFormIndices();
                 toggleRemoveButtons();
+                updateAddButtonState();
             });
         }
 
@@ -133,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
         totalFormsInput.value = formCount + 1;
         updateFormIndices();
         toggleRemoveButtons();
+        updateAddButtonState();
     });
 
     document.querySelectorAll('.remove-link').forEach(btn => {
@@ -145,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
             formToHide.style.display = 'none';
             updateFormIndices();
             toggleRemoveButtons();
+            updateAddButtonState();
         });
     });
 
@@ -168,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     updateFormIndices();
     toggleRemoveButtons();
+    updateAddButtonState();
 });
 </script>
 {% endblock %}
