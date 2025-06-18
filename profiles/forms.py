@@ -14,7 +14,7 @@ class ProfileForm(forms.ModelForm):
 PortfolioLinkFormSet = inlineformset_factory(
     Profile, PortfolioLink,
     fields=['link'],
-    extra=3,
+    extra=1,
     max_num=3,
     can_delete=True
 )
