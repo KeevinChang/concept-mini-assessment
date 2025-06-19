@@ -10,39 +10,66 @@
 {% endif %}
 {% endblock %}
 
-{% block navbar_search %}
-<form class="d-flex position-absolute start-50 translate-middle-x" role="search" method="get" action="">
-    <input class="form-control me-2" type="search" placeholder="Search by name" aria-label="Search" name="q" value="{{ search_query }}">
-</form>
-{% endblock %}
-
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">All Profiles</h2>
     <div class="row">
-        {% for profile in object_list %}
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <img src="{{ profile.profile_picture.url }}" class="card-img-top" alt="{{ profile.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ profile.name }}</h5>
-                        <p class="card-text">{{ profile.bio|truncatechars:100 }}</p>
-                        <p>
-                            {% for field in profile.creative_fields.all %}
-                                <span class="badge bg-secondary">{{ field.name }}</span>
-                            {% endfor %}
-                        </p>
-                        <a href="{% url 'profiles:profile-detail' profile.name %}" class="btn btn-outline-dark btn-sm">View Profile</a>
-
-                        {% if role == 'Creator' %}
-                            <a href="{% url 'profiles:profile-edit' profile.name %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
-                        {% endif %}
-                    </div>
+        <div class="col-md-3">
+            <form method="get">
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Search by name" name="q" value="{{ search_query }}">
                 </div>
+                <h5>Filter by Creative Fields</h5>
+                {% for field in all_fields %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="field" value="{{ field.id }}"
+                            id="field{{ field.id }}" {% if field.id|stringformat:"s" in field_filters %}checked{% endif %}>
+                        <label class="form-check-label" for="field{{ field.id }}">
+                            {{ field.name }}
+                        </label>
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-outline-primary mt-3 me-2">Apply Filters</button>
+                <a href="{% url 'profiles:profile-list' %}" class="btn btn-outline-secondary mt-3">Clear Filters</a>
+            </form>
+        </div>
+
+        <div class="col-md-9">
+            <div class="row">
+                {% if object_list %}
+                    {% for profile in object_list %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100">
+                                <img src="{{ profile.profile_picture.url }}" class="card-img-top" alt="{{ profile.name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ profile.name }}</h5>
+                                    <p class="card-text">{{ profile.bio|truncatechars:100 }}</p>
+                                    <p>
+                                        {% for field in profile.creative_fields.all %}
+                                            <span class="badge bg-secondary">{{ field.name }}</span>
+                                        {% endfor %}
+                                    </p>
+                                    <a href="{% url 'profiles:profile-detail' profile.name %}" class="btn btn-outline-dark btn-sm">View Profile</a>
+                                    {% if role == 'Creator' %}
+                                        <a href="{% url 'profiles:profile-edit' profile.name %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {% if profile_exists %}
+                        <p>No profiles match your current search or filters.</p>
+                    {% else %}
+                        <p>No profiles have been created yet.
+                        {% if role == 'Creator' %}
+                            Be the first!
+                        {% endif %}
+                        </p>
+                    {% endif %}
+                {% endif %}
             </div>
-        {% empty %}
-            <p>No profiles available.</p>
-        {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}

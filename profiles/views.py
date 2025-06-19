@@ -3,37 +3,40 @@ from django.forms import modelformset_factory, BaseModelFormSet
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django.db.models import Q, Count
 
 from .models import Profile, CreativeField, PortfolioLink
 from .forms import ProfileForm, PortfolioLinkFormSet
-
-# Create your views here.
-class SkippingBaseFormSet(BaseModelFormSet):
-    def clean(self):
-        super().clean()
-        for form in self.forms:
-            if self.can_delete:
-                delete = form.cleaned_data.get('DELETE', False)
-                obj_id = form.cleaned_data.get('id')
-                if delete and not obj_id:
-                    form._errors = {}
-
 
 class ProfileListView(ListView):
     model = Profile
     template_name = 'profiles/profile_list.html'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        query = self.request.GET.get('q')
+        self.all_profiles = Profile.objects.all()
+        self.filtered_profiles = self.all_profiles
+
+        query = self.request.GET.get('query')
+        field_ids = self.request.GET.getlist('field')
+
         if query:
-            queryset = queryset.filter(name__icontains=query)
-        return queryset
+            self.filtered_profiles = self.filtered_profiles.filter(name__icontains=query)
+
+        if field_ids:
+            field_ids = list(map(int, field_ids))
+            self.filtered_profiles = self.filtered_profiles.filter(creative_fields__in=field_ids) \
+                .annotate(num_matches=Count('creative_fields', filter=Q(creative_fields__in=field_ids), distinct=True)) \
+                .filter(num_matches=len(field_ids))
+
+        return self.filtered_profiles
 
     def get_context_data(self, **kwargs):
         context = super(ProfileListView, self).get_context_data(**kwargs)
         context['role'] = self.request.session['role']
         context['search_query'] = self.request.GET.get('q', '')
+        context['field_filters'] = self.request.GET.getlist('field')
+        context['all_fields'] = CreativeField.objects.all()
+        context['profile_exists'] = self.all_profiles.exists()
         return context
 
 
@@ -62,6 +65,7 @@ class ProfileCreateView(CreateView):
             context['formset'] = PortfolioLinkFormSet(self.request.POST)
         else:
             context['formset'] = PortfolioLinkFormSet()
+        context['role'] = self.request.session['role']
         return context
 
     def form_valid(self, form):
@@ -99,12 +103,13 @@ class ProfileUpdateView(UpdateView):
         return reverse_lazy('profiles:profile-detail', kwargs={'name': self.object.name})
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         if self.request.POST:
-            data['formset'] = PortfolioLinkFormSet(self.request.POST, self.request.FILES, instance=self.object)
+            context['formset'] = PortfolioLinkFormSet(self.request.POST, self.request.FILES, instance=self.object)
         else:
-            data['formset'] = PortfolioLinkFormSet(instance=self.object)
-        return data
+            context['formset'] = PortfolioLinkFormSet(instance=self.object)
+        context['role'] = self.request.session['role']
+        return context
 
     def form_valid(self, form):
         context = self.get_context_data()
