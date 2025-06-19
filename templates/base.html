@@ -30,9 +30,8 @@
                 </li>
                 {% block navbar_links %}{% endblock %}
             </ul>
-            {% block navbar_search %}{% endblock %}
+            <p class="text-light">You are a <strong>{{ role }}</strong></p>
         </div>
-
     </nav>
 
     {% if messages %}

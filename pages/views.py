@@ -13,4 +13,5 @@ def homepage(request):
 
 
 def about(request):
-    return render(request, 'pages/about.html')
+    role = request.session.get('role', 'Viewer')
+    return render(request, 'pages/about.html', {'role': role})
