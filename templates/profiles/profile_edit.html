@@ -30,7 +30,7 @@
 
         <div class="d-flex flex-wrap gap-2">
             <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{% url 'profiles:profile-detail' name=profile.name %}" class="btn btn-link">Cancel</a>
+            <a href="{% url 'profiles:profile-list'%}" class="btn btn-link">Cancel</a>
         </div>
 
         {% if form.errors %}
