@@ -1,22 +1,91 @@
 {% extends 'base.html' %}
 
+{% block style %}
+.section-heading {
+    font-size: 2em;
+    font-weight: 600;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.card-body ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 40px;
+}
+
+.card-body ul li {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.about-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.about-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.about-card .card-body {
+        padding: 30px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+{% endblock %}
+
 {% block content %}
-<div class="container d-flex flex-column justify-content-center align-items-center" style="height: 40vh;">
-    <h1>About</h1>
-    <h4>By Kevin Zhang</h4>
-    <h5>Tech Stack</h5>
-    <ul>
-        <li><strong>Backend</strong>: Django</li>
-        <li><strong>Frontend</strong>: Django Templates & Bootstrap</li>
-        <li><strong>Database</strong>: SQLite</li>
-    </ul>
-
-    <h5>Features</h5>
-    <ul>
-        <li>🧑‍🎨 User Profile Creation</li>
-        <li>🖼️ Profile Picture Upload</li>
-        <li>🔍 Search and Filter by Name or Field</li>
-    </ul>
-
+<div class="container d-flex flex-column justify-content-center align-items-center">
+    <h1 class="mt-4" style="text-transform: uppercase"><strong>About</strong></h1>
+    <h4 style="margin-bottom: 50px"><i>By Kevin Zhang</i></h4>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card about-card">
+                <div class="card-body">
+                    <h5 class="section-heading">Tech Stack</h5>
+                    <ul>
+                        <li><strong>Backend</strong>: Django</li>
+                        <li><strong>Frontend</strong>: Django Templates & Bootstrap</li>
+                        <li><strong>Database</strong>: SQLite</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card about-card">
+                <div class="card-body">
+                    <h5 class="section-heading">Features</h5>
+                    <ul>
+                        <li>🧑‍🎨 User Profile Creation</li>
+                        <li>🖼️ Profile Picture Upload</li>
+                        <li>🔍 Search and Filter by Name or Field</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card about-card">
+                <div class="card-body">
+                    <h5 class="section-heading">Limitations</h5>
+                    <ul>
+                        <li>Creative Fields can only be added through Django Admin currently</li>
+                        <li>Local media file storage places a limit on how many profile pictures can be used</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
