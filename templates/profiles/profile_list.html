@@ -3,10 +3,14 @@
 {% block title %}View Profiles{% endblock %}
 
 {% block style %}
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
 .card:hover {
-            box-shadow: 0 0 0 3px #ff921c66;
-            transition: box-shadow 0.2s ease-in-out;
-        }
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
 {% endblock %}
 
 {% block navbar_links %}
@@ -60,7 +64,7 @@
                                             <p class="mt-2 mb-0"><strong>Portfolio</strong>:</p>
                                             <ul class="list-unstyled mb-0">
                                                 {% for link in profile.portfolio_links.all %}
-                                                    <li><a href="{{ link.link }}" target="_blank" class="text-primary text-decoration-underline">{{ link.link|truncatechars:40 }}</a></li>
+                                                    <li><a href="{{ link.link }}" target="_blank" class="text-primary text-decoration-underline">{{ link.link|truncatechars:30 }}</a></li>
                                                 {% endfor %}
                                             </ul>
                                         {% endif %}
