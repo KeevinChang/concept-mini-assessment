@@ -2,6 +2,13 @@
 
 {% block title %}View Profiles{% endblock %}
 
+{% block style %}
+.card:hover {
+            box-shadow: 0 0 0 3px #ff921c66;
+            transition: box-shadow 0.2s ease-in-out;
+        }
+{% endblock %}
+
 {% block navbar_links %}
 {% if role == 'Creator' %}
 <li class="nav-item">

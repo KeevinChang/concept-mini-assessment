@@ -13,11 +13,6 @@
             display: none;
         }
 
-        .card:hover {
-            box-shadow: 0 0 0 3px #ff921c66;
-            transition: box-shadow 0.2s ease-in-out;
-        }
-
         .custom-navbar {
             background-color: #E0E0E0;
         }
@@ -31,6 +26,8 @@
         .custom-navbar .nav-link:hover {
             color: #000000;
         }
+
+        {% block style %}{% endblock %}
 </style>
 </head>
 <body style="background-color: #F4F4F4">
