@@ -39,22 +39,20 @@
                 {% if object_list %}
                     {% for profile in object_list %}
                         <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card h-100">
-                                <img src="{{ profile.profile_picture.url }}" class="card-img-top" alt="{{ profile.name }}">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ profile.name }}</h5>
-                                    <p class="card-text">{{ profile.bio|truncatechars:100 }}</p>
-                                    <p>
-                                        {% for field in profile.creative_fields.all %}
-                                            <span class="badge bg-secondary">{{ field.name }}</span>
-                                        {% endfor %}
-                                    </p>
-                                    <a href="{% url 'profiles:profile-detail' profile.name %}" class="btn btn-outline-dark btn-sm">View Profile</a>
-                                    {% if role == 'Creator' %}
-                                        <a href="{% url 'profiles:profile-edit' profile.name %}" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
-                                    {% endif %}
+                            <a href="{% url 'profiles:profile-detail' profile.name %}" class="card-link text-decoration-none text-dark">
+                                <div class="card h-100">
+                                    <img src="{{ profile.profile_picture.url }}" class="card-img-top" alt="{{ profile.name }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ profile.name }}</h5>
+                                        <p class="card-text">{{ profile.bio|truncatechars:100 }}</p>
+                                        <p>
+                                            {% for field in profile.creative_fields.all %}
+                                                <span class="badge bg-secondary">{{ field.name }}</span>
+                                            {% endfor %}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
