@@ -2,6 +2,79 @@
 
 {% block title %}{{ profile.name }}{% endblock %}
 
+{% block style %}
+.profile-detail-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px 40px;
+    color: #2E2E2E;
+}
+
+.profile-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.profile-image-col {
+    flex: 0 0 auto;
+    margin-right: 40px;
+    text-align: center;
+}
+
+.profile-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #E0E0E0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.profile-info-col {
+    flex-grow: 1;
+    min-width: 300px;
+}
+
+.portfolio-links-section {
+    margin-top: 30px;
+}
+
+.portfolio-links-section h3 {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: #2E2E2E;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.portfolio-link-item {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+.profile-name {
+    font-size: 3.2em;
+    font-weight: 700;
+    color: #2E2E2E;
+    margin-bottom: 10px;
+    line-height: 1.1;
+}
+
+.profile-bio {
+    font-size: 1.1em;
+    line-height: 1.7;
+    color: #4A4A4A;
+    margin-bottom: 25px;
+    word-wrap: break-word;
+}
+{% endblock %}
+
 {% block navbar_links %}
 {% if role == 'Creator' %}
 <li class="nav-item">
@@ -11,38 +84,34 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-5">
-    <div class="card mb-3">
-        <div class="row g-0">
-            <div class="col-md-4">
-                <img src="{{ profile.profile_picture.url }}" class="img-fluid rounded-start" alt="{{ profile.name }}">
+<div class="container profile-detail-container">
+    <div class="profile-card">
+        <div class="profile-image-col">
+            <img src="{{ profile.profile_picture.url }}" class="profile-image" alt="{{ profile.name }}">
+        </div>
+        <div class="profile-info-col">
+            <h2 class="profile-name">{{ profile.name }}</h2>
+            <p class="profile-bio">{{ profile.bio|truncatechars:1000 }}</p>
+            <p>
+                {% for field in profile.creative_fields.all %}
+                    <span class="badge bg-primary">{{ field.name }}</span>
+                {% endfor %}
+            </p>
+            <div class="portfolio-links-section">
+                <h3>Portfolio Links</h3>
+                {% for link in portfolio_links %}
+                    <div class="portfolio-link-item"><a href="{{ link.link }}" target="_blank">{{ link.link }}</a></div>
+                {% empty %}
+                    <li>No links provided.</li>
+                {% endfor %}
             </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h2 class="card-title">{{ profile.name }}</h2>
-                    <p class="card-text">{{ profile.bio|truncatechars:1000 }}</p>
-                    <p>
-                        {% for field in profile.creative_fields.all %}
-                            <span class="badge bg-primary">{{ field.name }}</span>
-                        {% endfor %}
-                    </p>
-                    <h5>Portfolio Links</h5>
-                    <ul>
-                        {% for link in portfolio_links %}
-                            <li><a href="{{ link.link }}" target="_blank">{{ link.link }}</a></li>
-                        {% empty %}
-                            <li>No links provided.</li>
-                        {% endfor %}
-                    </ul>
-                    {% if role == 'Creator' %}
-                    <a href="{% url 'profiles:profile-edit' profile.name %}" class="btn btn-outline-secondary">Edit Profile</a>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
-                        Delete Profile
-                    </button>
-                    {% endif %}
-                    <a href="{% url 'profiles:profile-list' %}" class="btn btn-secondary">Back</a>
-                </div>
-            </div>
+            {% if role == 'Creator' %}
+            <a href="{% url 'profiles:profile-edit' profile.name %}" class="btn btn-outline-secondary">Edit Profile</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
+                Delete Profile
+            </button>
+            {% endif %}
+            <a href="{% url 'profiles:profile-list' %}" class="btn btn-secondary">Back</a>
         </div>
     </div>
 </div>
