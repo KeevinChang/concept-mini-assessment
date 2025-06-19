@@ -35,7 +35,8 @@
                         {% endfor %}
                     </ul>
                     {% if role == 'Creator' %}
-                    <button type="button" class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
+                    <a href="{% url 'profiles:profile-edit' profile.name %}" class="btn btn-outline-secondary">Edit Profile</a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
                         Delete Profile
                     </button>
                     {% endif %}
