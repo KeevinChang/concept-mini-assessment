@@ -14,13 +14,27 @@
         }
 
         a.card-link:hover .card {
-            box-shadow: 0 0 0 3px #007bff33; /* light blue outline on hover */
+            box-shadow: 0 0 0 3px #00c2b8;
             transition: box-shadow 0.2s ease-in-out;
+        }
+
+        .custom-navbar {
+            background-color: #E0E0E0;
+        }
+
+        .custom-navbar .nav-link,
+        .custom-navbar .navbar-brand,
+        .custom-navbar p {
+            color: #2E2E2E;
+        }
+
+        .custom-navbar .nav-link:hover {
+            color: #000000;
         }
 </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark position-relative">
+<body style="background-color: #F4F4F4">
+    <nav class="navbar navbar-expand-lg custom-navbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'homepage' %}">Creative Portfolio App</a>
             <ul class="navbar-nav me-auto">
@@ -35,7 +49,7 @@
                 </li>
                 {% block navbar_links %}{% endblock %}
             </ul>
-            <p class="text-light">You are a <strong>{{ role }}</strong></p>
+            <p class="mt-1 mb-1">You are a <strong>{{ role }}</strong></p>
         </div>
     </nav>
 
@@ -52,7 +66,7 @@
         {% endblock %}
     </main>
 
-    <footer class="bg-dark text-light text-center py-2 mt-5 fixed-bottom">
+    <footer class="text-light text-center py-2 mt-5 fixed-bottom" style="background-color: #2E2E2E">
         <div class="container text-center">
             <span>
                 This is a demo. Do not submit private/sensitive information.
