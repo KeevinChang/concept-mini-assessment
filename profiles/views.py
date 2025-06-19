@@ -16,7 +16,7 @@ class ProfileListView(ListView):
         self.all_profiles = Profile.objects.all()
         self.filtered_profiles = self.all_profiles
 
-        query = self.request.GET.get('query')
+        query = self.request.GET.get('q')
         field_ids = self.request.GET.getlist('field')
 
         if query:
