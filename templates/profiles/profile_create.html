@@ -2,33 +2,92 @@
 
 {% block title %}Create Profile{% endblock %}
 
+{% block style %}
+.create-profile-container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 0 20px 40px;
+    color: #2E2E2E;
+}
+
+.create-profile-container h1 {
+    font-size: 3em;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #2E2E2E;
+}
+
+.form-section-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.form-section-card h2 {
+    font-size: 2em;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 8px;
+    color: #2E2E2E;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-top: 12px;
+    margin-bottom: 2px;
+    display: block;
+}
+{% endblock %}
+
 {% block content %}
-<div class="container py-3 mb-5">
-    <h2>Create Profile</h2>
+<div class="container create-profile-container">
+    <h1>Create Profile</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <h5>Portfolio Links (up to 3):</h5>
-        {{ formset.management_form }}
-        <div id="link-formset" class="d-flex flex-column gap-2">
-            {% for form in formset %}
-                <div class="link-form position-relative">
-                    {% for field in form.visible_fields %}
-                        {% if field.name != 'DELETE' %}
-                            {{ field.label_tag }} {{ field }}
-                        {% endif %}
-                    {% endfor %}
-                    <button type="button" class="btn btn-danger btn-sm remove-link">Remove</button>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="mb-3">
-            <button type="button" class="btn btn-secondary my-2" id="add-link">Add Link</button>
+
+        <div class="form-section-card">
+            <h2>Basic Information</h2>
+            <div class="form-group">
+                {% for field in form %}
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}:</label>
+                {{ field }}
+                {% endfor %}
+            </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2">
-            <button type="submit" class="btn btn-primary">Create</button>
-            <a href="{% url 'profiles:profile-list' %}" class="btn btn-link">Cancel</a>
+        <div class="form-section-card">
+            <h2>Portfolio Links (up to 3):</h2>
+            {{ formset.management_form }}
+            <div id="link-formset" class="d-flex flex-column gap-2">
+                {% for form in formset %}
+                    <div class="link-form position-relative">
+                        {% for field in form.visible_fields %}
+                            {% if field.name != 'DELETE' %}
+                                {{ field.label_tag }} {{ field }}
+                            {% endif %}
+                        {% endfor %}
+                        <button type="button" class="btn btn-danger btn-sm remove-link">Remove</button>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-secondary my-2" id="add-link">Add Link</button>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="{% url 'profiles:profile-list' %}" class="btn btn-link">Cancel</a>
+            </div>
         </div>
 
         {% if form.errors %}
@@ -96,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function () {
         totalForms.value = forms.length;
     }
 
-    // Initial call on page load
     toggleRemoveButtons();
 });
 </script>
